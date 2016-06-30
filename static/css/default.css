@@ -1,0 +1,20 @@
+
+
+.dragmagnet{
+	position: absolute !important;
+	width:250px;
+	height:250px;
+	float: none;
+	top:200px;
+	left:200px;
+}
+
+#menuwrapper{
+	top:20px;
+	left:20px;
+}
+
+.dropdown-menu{
+	width:50px;
+	min-width: 50px;
+}

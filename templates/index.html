@@ -1,0 +1,14 @@
+{% include 'top_user.html' %}
+<div id="walldiv">
+	<div class="dropdown" id="menuwrapper">
+		<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-circle-arrow-down"></span></button>
+		<ul class="dropdown-menu small-menu" aria-labelledby="dropdownMenu1">
+			<li><a href="javascript:;" onclick="toggle_stick_all();" class="btn active" id="pushpin"><span class="glyphicon glyphicon-pushpin"></span></a></li>
+			<li><a href="javascript:;" onclick="toggle_grid();" class="btn" id="gridtoggle"><span class="glyphicon glyphicon-th"></span></a></li>
+			<li role="separator" class="divider"></li>
+			<li><a href="javascript:;" onclick="create_magnet();"><span class="glyphicon glyphicon-plus"></a></li>
+		</ul>
+	</div>
+</div>
+<script src="{{ url_for('static', filename='js/wall.js') }}"></script>
+{% include 'bottom.html' %}

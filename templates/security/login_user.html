@@ -1,0 +1,35 @@
+{% include 'top.html' %}
+
+<div class="jumbotron">
+  
+  <h1>Login</h1>
+
+  <form action="/login" method="POST" name="login_user_form">
+    {{ login_user_form.hidden_tag() }}
+    <p>
+      <label for="email">Email Address</label> <input id="email" name="email" type="text" value="" class="form-control">
+
+    </p>
+
+
+    <p>
+      <label for="password">Password</label> <input id="password" name="password" type="password" value="" class="form-control">
+
+    </p>
+
+
+    <p>
+      <label for="remember">Remember Me</label> <input id="remember" name="remember" type="checkbox" value="y">
+
+    </p>
+
+
+    <p><input id="next" name="next" type="hidden" value="/"></p>
+
+
+    <p><input id="submit" name="submit" type="submit" value="Login" class="form-control"></p>
+
+  </form>
+</div>
+
+{% include 'bottom.html' %}
