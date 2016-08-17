@@ -3,9 +3,7 @@ movable=false;
 use_grid=false;
 
 $(function(){
-	// create_magnet();
-	// create_magnet();
-	// create_magnet();
+	load_magnets();
 });
 
 function free_magnet(num){
@@ -77,15 +75,56 @@ function toggle_grid(){
 
 function toggle_edit(num){
 	$('#edit-'+num).toggleClass("active");
+  var $div=$('#body-'+num), isEditable=$div.is('.editable');
+  $div.prop('contenteditable',!isEditable).toggleClass('editable');
 }
 
-function create_magnet(){
+function create_magnet(title="Magnet",text="Body",top=200,left=200,height=250,width=250){
 	$('#walldiv').append('<div class="panel panel-default dragmagnet" id="magnet-'+num_magnets+'"></div>');
-	$('#magnet-'+num_magnets).append('<div class="panel-heading"><div class="row"><div class="col-md-9">Magnet</div><div class="col-md-3 text-right"><a href="javascript:;" class="btn btn-default btn-xs" id="edit-'+num_magnets+'" onclick="toggle_edit('+num_magnets+')"><span class="glyphicon glyphicon-edit"></span></a></div></div></div>');
-	$('#magnet-'+num_magnets).append('<div class="panel-body" id="body-'+num_magnets+'">TEST</div>');
+	$('#magnet-'+num_magnets).append('<div class="panel-heading"><div class="row"><div class="col-md-9">'+title+'</div><div class="col-md-3 text-right"><a href="javascript:;" class="btn btn-default btn-xs" id="edit-'+num_magnets+'" onclick="toggle_edit('+num_magnets+')"><span class="glyphicon glyphicon-edit"></span></a></div></div></div>');
+	$('#magnet-'+num_magnets).append('<div class="panel-body magnetbody"><p id="body-'+num_magnets+'">'+text+'</p></div>');
 	$('#magnet-'+num_magnets).css("z-index",num_magnets);
+	$('#magnet-'+num_magnets).css("top",top);
+	$('#magnet-'+num_magnets).css("left",left);
+	$('#magnet-'+num_magnets).css("height",height);
+	$('#magnet-'+num_magnets).css("width",width);
 	if(movable){
 		free_magnet(num_magnets);
 	}
 	num_magnets++;
+}
+
+function load_magnets(){
+	$.ajax({
+		dataType: "json",
+		url: "/magnets",
+		async: false,
+		success: function(data){
+			$(data).each(function(key,value){
+				create_magnet(value['title'],value['text'],value['top'],value['left'],value['height'],value['width']);
+			});
+		}
+	});
+}
+
+function save_magnet(num){
+	leftValue = $("#magnet-"+num).css("left");
+	topValue = $("#magnet-"+num).css("top");
+	heightValue = $("#magnet-"+num).css("height");
+	widthValue = $("#magnet-"+num).css("width");
+	data = {id:num, left:leftValue, top: topValue, height: heightValue, width: widthValue}
+	console.log(num);
+	console.log(data);
+	$.ajax({
+		dataType: "html",
+		url: "/magnet/"+num+"/edit",
+		async: false,
+		type: "POST",
+		data: data,
+		success: function(data){
+				console.log(data);
+		},error: function(data){
+			console.log(data);
+		}
+	});
 }

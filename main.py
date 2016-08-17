@@ -1,6 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required
+from flask.ext.login import current_user
 import os
 import json
 from flask_mail import Mail
@@ -61,15 +62,47 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
+class Magnet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150))
+    text = db.Column(db.Text)
+    top = db.Column(db.Integer)
+    left = db.Column(db.Integer)
+    height = db.Column(db.Integer)
+    width = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref=db.backref('magnets', lazy='dynamic'))
+
+    def __init__(self,title,text,user,top,left,height,width):
+        self.title=title
+        self.text=text
+        self.user=user
+        self.top=top
+        self.left=left
+        self.height=height
+        self.width=width
+
+    def get_dataDict(self):
+        magnetData = {
+            "id":self.id,
+            "title":self.title,
+            "text":self.text,
+            "top":self.top,
+            "left":self.left,
+            "height":self.height,
+            "width":self.width
+        }
+        return magnetData
+
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore)
 
 # Create a user to test with
-@app.before_first_request
-def create_user():
-   db.create_all()
-   # TODO: User creation via config file
+# @app.before_first_request
+# def create_user():
+   #db.create_all()
+   # TODO: User creation via config file or installer
    #user_datastore.create_user(email='admin@localhost', password='admin')
    #db.session.commit()
 
@@ -77,6 +110,41 @@ def create_user():
 @login_required
 def home():
     return render_template('index.html')
+
+@app.route('/magnets')
+@login_required
+def magnets():
+    # m = Magnet("titel1","das ist der text",current_user,120,120,300,400)
+    # m = Magnet("titel2","das ist der text",current_user,280,280,300,400)
+    # db.session.add(m)
+    # db.session.commit()
+    data=[]
+    
+    for magnet in current_user.magnets.all():
+        data.append(magnet.get_dataDict())
+
+    return json.dumps(data)
+
+@app.route('/magnet/<id>')
+@login_required
+def show_magnet(id):
+    magnet = Magnet.query.filter(Magnet.user == current_user,Magnet.id == id).first()
+    data=magnet.get_dataDict()
+    return json.dumps(data)
+
+@app.route('/magnet/<id>/edit', methods=['POST'])
+@login_required
+def update_magnet(id):
+
+    magnet = Magnet.query.filter(Magnet.user == current_user,Magnet.id == id).first()
+    magnet.top = request.form['top']
+    magnet.left = request.form['left']
+    magnet.height = request.form['height']
+    magnet.width = request.form['width']
+    db.session.commit()
+    print(request.form['id'])
+    return json.dumps("ok")
+
 
 if __name__ == '__main__':
     app.run()

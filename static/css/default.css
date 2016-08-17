@@ -1,5 +1,4 @@
 
-
 .dragmagnet{
 	position: absolute !important;
 	width:250px;
@@ -7,6 +6,11 @@
 	float: none;
 	top:200px;
 	left:200px;
+}
+
+.magnetbody{
+	overflow: auto;
+	height:80%;
 }
 
 #menuwrapper{
